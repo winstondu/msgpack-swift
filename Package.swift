@@ -46,10 +46,14 @@ var package = Package(
       .package(url: "https://github.com/fumoboy007/MessagePackReferenceImplementation.git", from: "1.0.1"),
       .package(url: "https://github.com/hirotakan/MessagePacker.git", from: "0.4.7"),
       .package(url: "https://github.com/nnabeyang/swift-msgpack.git", from: "0.2.7"),
+      .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.4"),
    ],
    targets: [
       .target(
-         name: "MessagePack"
+         name: "MessagePack",
+         dependencies: [
+            .product(name: "OrderedCollections", package: "swift-collections"),
+         ]
       ),
 
       .testTarget(
