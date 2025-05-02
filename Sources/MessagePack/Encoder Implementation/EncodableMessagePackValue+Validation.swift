@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 import Foundation
+import OrderedCollections
 
 extension EncodableMessagePackValue {
    private static let maxStringUTF8ByteCount = 1<<32 - 1
@@ -442,6 +443,17 @@ extension EncodableMessagePackValue {
    }
 
    private static func validate<Key, Value>(_ dictionary: [Key: Value],
+                                            forEncodingAt codingPath: () -> [any CodingKey]) throws {
+      let actualCount = dictionary.count
+      let maxCount = maxMapElementCount
+      guard actualCount <= maxCount else {
+         let context = EncodingError.Context(codingPath: codingPath(),
+                                             debugDescription: "Dictionary has \(actualCount) elements but MessagePack only supports a maximum of \(maxCount) elements.")
+         throw EncodingError.invalidValue(dictionary, context)
+      }
+   }
+
+   private static func validate<Key, Value>(_ dictionary: OrderedDictionary<Key, Value>,
                                             forEncodingAt codingPath: () -> [any CodingKey]) throws {
       let actualCount = dictionary.count
       let maxCount = maxMapElementCount

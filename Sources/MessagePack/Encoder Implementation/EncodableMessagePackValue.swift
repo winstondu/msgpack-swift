@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 import Foundation
+import OrderedCollections
 
 // Some rare cases are marked as `indirect` to reduce memory usage for the common cases.
 //
@@ -48,7 +49,7 @@ enum EncodableMessagePackValue {
 
    case array([EncodableMessagePackValue])
 
-   case map([MessagePackKey: EncodableMessagePackValue])
+   case map(OrderedDictionary<MessagePackKey, EncodableMessagePackValue>)
 
    // This case is rare because application-specific extensions are rare. Predefined
    // extensions (e.g. timestamp) are specialized below.

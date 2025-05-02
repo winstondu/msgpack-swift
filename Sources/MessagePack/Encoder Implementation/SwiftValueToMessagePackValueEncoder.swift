@@ -19,6 +19,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+import Foundation
+import OrderedCollections
 
 final class SwiftValueToMessagePackValueEncoder {
    // Copied from the `JSONEncoder` implementation. I assume Apple tuned this number for optimal performance:
@@ -33,7 +35,7 @@ final class SwiftValueToMessagePackValueEncoder {
 
    let userInfo: [CodingUserInfoKey: Any]
 
-   private var dictionary: [MessagePackKey: EncodableMessagePackValue]?
+   private var dictionary: OrderedDictionary<MessagePackKey, EncodableMessagePackValue>?
    private var array: [EncodableMessagePackValue]?
    private var singleValue: EncodableMessagePackValue?
 
@@ -186,7 +188,7 @@ extension SwiftValueToMessagePackValueEncoder: Encoder {
                    "Found existing top-level encoding container at coding path `\(codingPath)`.")
 
       if dictionary == nil {
-         dictionary = Dictionary(minimumCapacity: Self.initialDictionaryCapacity)
+         dictionary = OrderedDictionary(minimumCapacity: Self.initialDictionaryCapacity)
       }
 
       return KeyedEncodingContainer(KeyedMessagePackEncodingContainer(encoder: self))

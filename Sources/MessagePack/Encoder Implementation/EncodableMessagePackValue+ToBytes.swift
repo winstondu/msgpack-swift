@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 import Foundation
+import OrderedCollections
 
 extension EncodableMessagePackValue {
    func encode(to messageWriter: inout MessageWriter) throws {
@@ -774,6 +775,29 @@ extension EncodableMessagePackValue {
    }
 
    private func encodeCount<Key, Value>(of dictionary: [Key: Value], to messageWriter: inout MessageWriter) {
+      let elementCount = dictionary.count
+      if let elementCount = UInt16(exactly: elementCount) {
+         switch elementCount {
+         case 0..<(1<<4):
+            messageWriter.write(byte: 0b10000000 | UInt8(elementCount))
+
+         default:
+            messageWriter.write(byte: 0xde)
+            withUnsafeBytes(of: elementCount.bigEndian) {
+               messageWriter.write($0)
+            }
+         }
+      } else if let elementCount = UInt32(exactly: elementCount) {
+         messageWriter.write(byte: 0xdf)
+         withUnsafeBytes(of: elementCount.bigEndian) {
+            messageWriter.write($0)
+         }
+      } else {
+         preconditionFailure("Unsupported dictionary element count \(elementCount) should have been blocked earlier in the encoding flow.")
+      }
+   }
+
+   private func encodeCount<Key, Value>(of dictionary: OrderedDictionary<Key, Value>, to messageWriter: inout MessageWriter) {
       let elementCount = dictionary.count
       if let elementCount = UInt16(exactly: elementCount) {
          switch elementCount {
